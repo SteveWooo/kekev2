@@ -1,0 +1,16 @@
+{
+    "httpServer" : {
+        "open" : true,
+        "jsonOnly" : true,
+        "baseResoursePath" : "res",
+        "bussinessName" : "swc",
+        "port" : 81
+    },
+    "mysql" : {
+		"host" : "127.0.0.1",
+		"user" : "root",
+		"password" : "123456",
+		"database" : "keke_stage",
+		"port" : 3303
+	}
+}
