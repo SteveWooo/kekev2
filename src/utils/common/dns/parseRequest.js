@@ -1,8 +1,8 @@
-function parseHeader(swc, options, result){
+function parseHeader(options, result){
 	var header = {};
 
 	/**
-	* id部分，按照我的格式 x-x
+	* id部分，按照这个格式 x-x
 	*/
 	header.id = options.msg[0] + "-" + options.msg[1];
 
@@ -41,7 +41,7 @@ function parseHeader(swc, options, result){
 	return result;
 }
 
-function parseQuestion(swc, options, result){
+function parseQuestion(options, result){
 	var question = {
 		domain : '',
 		type : '',
@@ -70,10 +70,10 @@ var utils = {
 	/**
 	* 根据offset 获取响应中的域名
 	*/
-	getDomain : function(swc, options, result, offset){
+	getDomain : function(options, result, offset){
 		var domain = '';
 		var i = offset;
-		console.log(`here : ${offset}`);
+		// console.log(`here : ${offset}`);
 		while(options.msg[i] != 0){
 			var tempDomain = [];
 			for(var k=i + 1;k<options.msg[i] + i + 1;k++){
@@ -86,12 +86,12 @@ var utils = {
 			}
 		}
 
-		console.log(domain);
+		// console.log(domain);
 		return domain;
 	}
 }
 
-function parseAnswer(swc, options, result){
+function parseAnswer(options, result){
 	var answer = [];
 
 	//响应结果偏移量
@@ -103,10 +103,10 @@ function parseAnswer(swc, options, result){
 		//偏移指针:C00C
 		if(options.msg[offset] == 192){
 			ans.offset = options.msg[offset + 1];
-			ans.domain = utils.getDomain(swc, options, result, ans.offset);
+			ans.domain = utils.getDomain(options, result, ans.offset);
 		} else {
 			//没遇到过，我也不知道咋整，好像会把整个域名丢进这个位置。
-			console.log('没有offset的包出现了！赶紧加高offset');
+			// console.log('没有offset的包出现了！赶紧加高offset');
 		}
 
 		//解析类型
@@ -144,13 +144,12 @@ function parseAnswer(swc, options, result){
 	return result;
 }
 
-function parseAuthority(swc, options, result){
+/**
+ * 权威域名服务器解析，暂时不做
+ */
+function parseAuthority(options, result){
 	var authority = [];
 	var resultOffset = result.resultOffset;
-
-	for(var i=0;i<options.msg.length;i++){
-		console.log(`${i} : ${options.msg[i]}, ${String.fromCharCode(options.msg[i])}`);
-	}
 
 	return result;
 }
@@ -159,24 +158,22 @@ function parseAuthority(swc, options, result){
 * 负责解析请求数据包
 * @param.msg DNS请求数据包
 */
-module.exports = async function(swc, options){
+module.exports = function(options){
 	var result = {
 		resultOffset : 12
 	};
 
 	try{
-		result = parseHeader(swc, options, result);
-		result = parseQuestion(swc, options, result);
+		result = parseHeader(options, result);
+		result = parseQuestion(options, result);
 		result.resultOffset = 12  //头
 				+ result.question.domain.length + 2 //域名
 				+ 4 //2个类型;
-		result = parseAnswer(swc, options, result);
-		result = parseAuthority(swc, options, result);
+		result = parseAnswer(options, result);
+		result = parseAuthority(options, result);
 	}catch(e){
 		console.log(e)
 	}
-
-	console.log(result);
 
 	return result;
 }
