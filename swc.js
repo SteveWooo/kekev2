@@ -31,15 +31,17 @@ async function getArgv(){
 /**
 * 此处载入配置
 */
-async function loadConfig(){
+async function loadConfig(options){
     let swc = global.swc;
-	//此处填入配置
-    if(swc.argv.config == undefined) {
+    // 优先载入传入参数中的配置
+    if(options && options.config != undefined) {
+        swc.config = options.config;
+    } else if(swc.argv.config != undefined) {
+        swc.config = require(`${path.resolve()}/${swc.argv.config}`);
+    } else {
         swc.log.error(`未找到配置文件参数，已使用默认路径下配置`)
         swc.log.error(`${path.resolve()}/config.json`)
         swc.config = require(`${path.resolve()}/config.json`);
-    } else {
-        swc.config = require(`${path.resolve()}/${swc.argv.config}`);
     }
 
     global.swc = swc;
@@ -154,8 +156,9 @@ async function loadCommonUtils(){
 
 /**
 * 初始化swc
+* @param options {Object} 一些初始化载入的参数，比如载入配置文件数据
 */
-async function init(){
+async function init(options){
     global.swc = {};
 	//初始化控制台输出
 	global.swc = {
@@ -224,7 +227,7 @@ async function init(){
 		registerModel : require(`${__dirname}/src/services/registerModel`),
 		registerDao : require(`${__dirname}/src/services/registerDao`),
 	}
-	await loadConfig();
+	await loadConfig(options);
     global.swc.log.info('载入 配置');
     
     // 如果配置了http服务，就加载http。这样做是减少模块安装数量。

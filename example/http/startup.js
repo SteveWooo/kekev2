@@ -1,11 +1,13 @@
 async function main(){
     // 注意引入swc文件路径。
-    await require(`${__dirname}/../../swc`)();
+    await require(`${__dirname}/../../swc`)({
+        config : require(`${__dirname}/config.json`)
+    });
     let swc = global.swc;
     
-    // mysql
+    // mysql 模块载入
     await swc.registerMysqlDao({
-		servicePath : `${__dirname}/httpDao/mysql.js`
+		path : `${__dirname}/httpDao/mysql.js`
 	});
 
     // http 服务
