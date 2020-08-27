@@ -78,10 +78,10 @@ async function loadExpressMiddlewares(){
 		next();
 	})
 
-	swc.app.all('*.js', function(req, res, next){
-		res.header('Cache-Control', 'public, max-age=86400');
-		next();
-	})
+	// swc.app.all('*.js', function(req, res, next){
+	// 	res.header('Cache-Control', 'public, max-age=86400');
+	// 	next();
+	// })
 
 	swc.app.all('*.css', function(req, res, next){
 		res.header('Cache-Control', 'public, max-age=86400');
